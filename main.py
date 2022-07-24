@@ -1,4 +1,5 @@
 
+
 class Student:
     def __init__(self, name, surname, gender):
         self.name = name
@@ -17,20 +18,32 @@ class Student:
         else:
             return 'Ошибка'
 
-        def __str__(self):
-            student_inf = f'''Имя: {self.name} 
-    Фамилия: {self.surname} 
-    Средняя оценка за домашние задания: {_av_hw_}
-    Курсы в процессе изучения: {self.courses_in_progress}
-    Завершенные курсы: {self.finished_courses}'''
-            return student_inf
+    def __str__(self):
+        self.cp_column = ', '.join(self.courses_in_progress)
+        self.fc_column = ', '.join(self.finished_courses)
+        student_inf = f'''Имя: {self.name} 
+Фамилия: {self.surname} 
+Средняя оценка за домашние задания: {self._av_hw_()}
+Курсы в процессе изучения: {self.cp_column}
+Завершенные курсы: {self.fc_column}'''
+        return student_inf
 
-        def _av_hw_(self):
-            hw_list = []
-            for k,v in self.grades.items():
-                hw_list.append(v)
-            return sum(hw_list) / len(hw_list)
+    def _av_hw_(self):
+        hw_list = []
+        for k,v in self.grades.items():
+            for vv in v:
+                hw_list.append(vv)
+        return sum(hw_list) / len(hw_list)
 
+    # def _c_list_(self):
+    #     for i in self.courses_in_progress:
+    #         print('1')
+
+    def __lt__(self, other):
+        if not isinstance(other, Student):
+            print('Это не студент!')
+            return
+        return self._av_hw_() < other._av_hw_()
 
 
 class Mentor:
@@ -50,14 +63,28 @@ class Lecturer(Mentor):
     def __str__(self):
         lect_inf = f'''Имя: {self.name} 
 Фамилия: {self.surname} 
-Средняя оценка за лекции: {av_lt}'''
+Средняя оценка за лекции: {self._av_lt_()}'''
         return lect_inf
+
+    def _av_lt_(self):
+        lt_list = []
+        for k,v in self.grades.items():
+            for vv in v:
+                lt_list.append(vv)
+        return sum(lt_list) / len(lt_list)
+
+    def __lt__(self, other):
+        if not isinstance(other, Lecturer):
+            print('Это не лектор!')
+            return
+        return self._av_lt_() < other._av_lt_()
+
 
 
 class Reviewer(Mentor):
     def __str__(self):
         rev_inf = f'''Имя: {self.name} 
-    Фамилия: {self.surname}'''
+Фамилия: {self.surname}'''
         return rev_inf
 
     def rate_hw(self, student, course, grade):
@@ -71,29 +98,67 @@ class Reviewer(Mentor):
 
 
 
-katya = Student('Ekaterina', 'Sinitsyna', 'female')
-katya.courses_in_progress += ['Python']
 
-petya = Student('Pyotr', 'Skvortsov', 'male')
+katya = Student('Екатерина', 'Синичкина', 'female')
 katya.courses_in_progress += ['Python']
+katya.courses_in_progress += ['Git']
+katya.finished_courses += ['Введение в программирование']
 
-ivanovich = Reviewer('Ivan', 'Petrov')
+petya = Student('Петр', 'Скворцов', 'male')
+petya.courses_in_progress += ['Python']
+petya.courses_in_progress += ['Git']
+petya.finished_courses += ['Введение в программирование']
+
+ivanovich = Reviewer('Иван', 'Воробейченко')
 ivanovich.courses_attached += ['Python']
 
-petrovich = Reviewer('Petr', 'Petrov')
-ivanovich.courses_attached += ['Python']
+petrovich = Reviewer('Петр', 'Куроедов')
+petrovich.courses_attached += ['Git']
 
-eduard = Lecturer('Eduard', 'Khramov')
+eduard = Lecturer('Эдуард', 'Ареопагитский')
 eduard.courses_attached += ['Python']
 
-veniamin = Lecturer('Veniamin', 'Bogoyavlenskiy')
-veniamin.courses_attached += ['Python']
+veniamin = Lecturer('Вениамин', 'Богоявленский')
+veniamin.courses_attached += ['Git']
 
 ivanovich.rate_hw(katya, 'Python', 10)
-
+ivanovich.rate_hw(katya, 'Python', 8)
+ivanovich.rate_hw(petya, 'Python', 9)
+ivanovich.rate_hw(petya, 'Python', 8)
+petrovich.rate_hw(katya, 'Git', 6)
+petrovich.rate_hw(katya, 'Git', 7)
+petrovich.rate_hw(petya, 'Git', 8)
+petrovich.rate_hw(petya, 'Git', 7)
 katya.rate_lt(eduard, 'Python', 10)
+katya.rate_lt(eduard, 'Python', 9)
+katya.rate_lt(veniamin, 'Git', 5)
+katya.rate_lt(veniamin, 'Git', 6)
+petya.rate_lt(eduard, 'Python', 7)
+petya.rate_lt(eduard, 'Python', 6)
+petya.rate_lt(veniamin, 'Git', 4)
+petya.rate_lt(veniamin, 'Git', 6)
 
 
-# print(katya.grades)
-av_lt = 5
-print(veniamin)
+# print(katya)
+# print(petya)
+# print(veniamin)
+# print(eduard)
+# print(ivanovich)
+# print(petrovich)
+
+# print(eduard < veniamin)
+# print(katya > petya)
+
+students_list = [katya, petya]
+lectors_list = [eduard, veniamin]
+
+def student_course_grade(student, course):
+    if student in students_list:
+        for k, v in student.grades.items():
+            if k == course:
+                gradeslist = student.grades[course]
+                av_grade = sum(gradeslist) / len(gradeslist)
+                return av_grade
+
+print(student_course_grade(petya, 'Git'))
+
