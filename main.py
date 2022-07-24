@@ -35,9 +35,6 @@ class Student:
                 hw_list.append(vv)
         return sum(hw_list) / len(hw_list)
 
-    # def _c_list_(self):
-    #     for i in self.courses_in_progress:
-    #         print('1')
 
     def __lt__(self, other):
         if not isinstance(other, Student):
@@ -71,7 +68,8 @@ class Lecturer(Mentor):
         for k,v in self.grades.items():
             for vv in v:
                 lt_list.append(vv)
-        return sum(lt_list) / len(lt_list)
+        av = sum(lt_list) / len(lt_list)
+        return av
 
     def __lt__(self, other):
         if not isinstance(other, Lecturer):
@@ -139,26 +137,39 @@ petya.rate_lt(veniamin, 'Git', 4)
 petya.rate_lt(veniamin, 'Git', 6)
 
 
-# print(katya)
-# print(petya)
-# print(veniamin)
-# print(eduard)
-# print(ivanovich)
-# print(petrovich)
+print(katya)
+print(petya)
+print(veniamin)
+print(eduard)
+print(ivanovich)
+print(petrovich)
 
-# print(eduard < veniamin)
-# print(katya > petya)
 
-students_list = [katya, petya]
-lectors_list = [eduard, veniamin]
+st_list = [katya, petya]
+lt_list = [eduard, veniamin]
 
-def student_course_grade(student, course):
-    if student in students_list:
+def student_course_grade(students, course):
+    gradeslist = []
+    for student in students:
         for k, v in student.grades.items():
             if k == course:
-                gradeslist = student.grades[course]
-                av_grade = sum(gradeslist) / len(gradeslist)
-                return av_grade
+                gradeslist += student.grades[course]
+    av_grade = sum(gradeslist) / len(gradeslist)
+    return av_grade
 
-print(student_course_grade(petya, 'Git'))
+def lecturer_course_grade(lecturers, course):
+    gradeslist = []
+    for lecturer in lecturers:
+        for k, v in lecturer.grades.items():
+            if k == course:
+                gradeslist += lecturer.grades[course]
+    av_grade = sum(gradeslist) / len(gradeslist)
+    return av_grade
 
+
+print(student_course_grade(st_list, 'Python'))
+print(lecturer_course_grade(lt_list, 'Git'))
+
+
+print(veniamin > eduard)
+print(katya > petya)
